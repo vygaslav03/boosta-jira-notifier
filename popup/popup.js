@@ -148,7 +148,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     issues.forEach(issue => {
       const card = document.createElement('div');
       card.className = 'notification-card';
-      const tagText = `[${issue.key}] ${issue.summary}`;
+      const tagText = issue.key || '';
       const relativeTime = formatRelativeTime(issue.updated);
 
       card.innerHTML = `
@@ -156,7 +156,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           <span class="issue-status-badge ${issue.statusCategory}">${escapeHtml(issue.statusName)}</span>
           <div class="issue-key-badge-group">
             <span class="issue-key">${escapeHtml(issue.key)}</span>
-            <button class="btn-copy-tag" title="Скопировать тег: ${escapeHtml(tagText)}" aria-label="Copy task tag">
+            <button class="btn-copy-tag" title="Скопировать номер: ${escapeHtml(tagText)}" aria-label="Copy task number">
               <svg class="copy-icon" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                 <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"></path>
@@ -331,17 +331,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       const iconSvg = getTypeIconSvg(item.type);
       const relativeTime = formatRelativeTime(item.timestamp);
       const issueKey = item.issueKey || '';
-      
-      // Clean up issue summary or title to avoid "Status updated: KEY" duplicates
-      let summary = item.issueSummary || '';
-      if (!summary && item.title) {
-        summary = item.title
-          .replace(/^(Status updated|You were mentioned in|Assigned to you|New Comment on|Review Requested|⏰ Deadline Alert):\s*/i, '')
-          .replace(new RegExp(`^${issueKey}\\s*`, 'i'), '')
-          .trim();
-      }
       const displayTitle = item.issueSummary || item.title || '';
-      const tagText = issueKey ? (summary ? `[${issueKey}] ${summary}` : `[${issueKey}]`) : summary;
+      const tagText = issueKey;
 
       card.innerHTML = `
         <div class="notif-top">
@@ -352,7 +343,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           <div class="issue-key-badge-group">
             <span class="issue-key">${escapeHtml(issueKey)}</span>
             ${issueKey ? `
-              <button class="btn-copy-tag" title="Скопировать тег: ${escapeHtml(tagText)}" aria-label="Copy task tag">
+              <button class="btn-copy-tag" title="Скопировать номер: ${escapeHtml(tagText)}" aria-label="Copy task number">
                 <svg class="copy-icon" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2">
                   <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                   <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"></path>
