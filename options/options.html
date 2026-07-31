@@ -330,6 +330,23 @@
             </div>
 
             <div id="telegramTestStatus" class="mt-2 text-sm" style="display: none;"></div>
+
+            <div class="toggle-row mt-3 pt-3" style="border-top: 1px solid rgba(255,255,255,0.1); margin-top: 12px; padding-top: 12px;">
+              <div>
+                <strong>Утренний дайджест задач</strong>
+                <p class="form-help">Присылать утреннюю сводку нерешенных задач раз в день в Telegram</p>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="enableDailyDigest" checked>
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <div class="form-group mt-2">
+              <label for="digestTime" class="form-label">Время отправки дайджеста</label>
+              <input type="time" id="digestTime" class="form-input" value="09:00" style="max-width: 150px;">
+              <span class="form-help">Каждое утро в указанное время бот пришлет свежую сводку задач.</span>
+            </div>
           </div>
         </section>
 
