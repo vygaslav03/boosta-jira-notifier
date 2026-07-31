@@ -51,6 +51,11 @@
           </svg>
           <span>Jira</span>
         </button>
+        <button id="btnDnd" class="btn btn-icon-only" title="Focus Mode (Do Not Disturb)">
+          <svg class="btn-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+          </svg>
+        </button>
         <button id="btnSettings" class="btn btn-icon-only" title="Settings">
           <svg class="btn-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="3"></circle>
@@ -59,6 +64,13 @@
         </button>
       </div>
     </section>
+
+    <!-- DND Active Banner -->
+    <div class="dnd-banner" id="dndBanner" style="display: none;">
+      <span class="dnd-icon">🌙</span>
+      <span class="dnd-text" id="dndText">Do Not Disturb Active</span>
+      <button class="btn-text dnd-off-btn" id="btnDisableDnd">Disable</button>
+    </div>
 
     <!-- Main Notification List Container -->
     <main class="notifications-section">
