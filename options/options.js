@@ -76,6 +76,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   const connectionBanner = document.getElementById('connectionBanner');
   const saveStatus = document.getElementById('saveStatus');
 
+  // Log Console Elements
+  const btnRefreshLogs = document.getElementById('btnRefreshLogs');
+  const btnCopyLogs = document.getElementById('btnCopyLogs');
+  const btnClearLogs = document.getElementById('btnClearLogs');
+  const logConsole = document.getElementById('logConsole');
+
   /**
    * Initializes settings form state from chrome.storage.
    */
@@ -157,9 +163,63 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
 
       applyTheme(darkThemeCb.checked);
+      await renderLogs();
     } catch (error) {
       console.error('[Options] Error loading options data:', error);
     }
+  }
+
+  async function renderLogs() {
+    if (!logConsole) return;
+    try {
+      const logs = await storageManager.getLogs();
+      if (!logs || logs.length === 0) {
+        logConsole.innerHTML = '<div class="log-entry info" style="color: #9CA3AF;">[INFO] Лог-журнал пуст. Зафиксированных ошибок нет.</div>';
+        return;
+      }
+
+      logConsole.innerHTML = '';
+      logs.forEach(log => {
+        const div = document.createElement('div');
+        div.className = `log-line log-${(log.level || 'info').toLowerCase()}`;
+        const time = new Date(log.timestamp).toLocaleTimeString();
+        let color = '#D4D4D4';
+        if (log.level === 'ERROR') color = '#EF4444';
+        if (log.level === 'WARN') color = '#F59E0B';
+        div.style.color = color;
+        div.style.marginBottom = '3px';
+        div.textContent = `[${time}] [${log.level || 'INFO'}] [${log.module || 'System'}] ${log.message}`;
+        logConsole.appendChild(div);
+      });
+    } catch (err) {
+      console.error('[Options] Error rendering logs:', err);
+    }
+  }
+
+  if (btnRefreshLogs) {
+    btnRefreshLogs.addEventListener('click', renderLogs);
+  }
+
+  if (btnClearLogs) {
+    btnClearLogs.addEventListener('click', async () => {
+      await storageManager.clearLogs();
+      await renderLogs();
+    });
+  }
+
+  if (btnCopyLogs) {
+    btnCopyLogs.addEventListener('click', async () => {
+      try {
+        const logs = await storageManager.getLogs();
+        const formatted = logs.map(l => `[${l.timestamp}] [${l.level}] [${l.module}] ${l.message}`).join('\n');
+        await navigator.clipboard.writeText(formatted || 'No logs recorded.');
+        const origText = btnCopyLogs.textContent;
+        btnCopyLogs.textContent = '✓ Скопировано!';
+        setTimeout(() => { btnCopyLogs.textContent = origText; }, 1500);
+      } catch (err) {
+        console.error('[Options] Copy logs error:', err);
+      }
+    });
   }
 
   function toggleJiraType(type) {
