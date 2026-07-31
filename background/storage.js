@@ -24,7 +24,15 @@ export const DEFAULT_SETTINGS = {
   soundType: 'anime',        // 'anime' (Anime Girl Voice), 'chime' (Classic Bell), 'custom' (MP3)
   enableNotifications: true, // Display desktop notifications
   language: 'ru',            // 'en' (English), 'ru' (Russian), 'ua' (Ukrainian)
-  darkTheme: false           // Toggle UI theme in popup and options
+  darkTheme: false,          // Toggle UI theme in popup and options
+  // Smart Alerts & Quiet Hours
+  dndUntil: null,           // ISO string timestamp until which DND is active
+  enableQuietHours: false,  // Enable quiet hours during off-work hours
+  quietHoursStart: '19:00', // Start time for quiet hours
+  quietHoursEnd: '09:00',   // End time for quiet hours
+  quietHoursWeekends: true, // Silence alerts on Saturday and Sunday
+  enableDueAlerts: true,    // Alert about upcoming Due Dates / Deadlines
+  dueAlertDays: 1           // Alert N days before Due Date (0 = day of deadline, 1 = 1 day before)
 };
 
 /**
