@@ -439,23 +439,14 @@ export class JiraApiClient {
    * @returns {Promise<Array<Object>>} List of issue objects formatted for UI display.
    */
   async fetchTabIssues(tabType = 'assigned') {
-    let jql = 'assignee = currentUser() AND resolution = Unresolved ORDER BY updated DESC';
+    let jql = 'assignee = currentUser() AND statusCategory != Done ORDER BY updated DESC';
     if (tabType === 'watched') {
-      jql = 'watcher = currentUser() AND resolution = Unresolved ORDER BY updated DESC';
+      jql = 'watcher = currentUser() AND statusCategory != Done ORDER BY updated DESC';
     } else if (tabType === 'review') {
-      jql = 'resolution = Unresolved AND (status in ("In Review", "Code Review", "Review", "Approved") OR text ~ "review") ORDER BY updated DESC';
+      jql = 'statusCategory != Done AND (text ~ "review" OR text ~ "ревью") ORDER BY updated DESC';
     }
 
-    const searchParams = new URLSearchParams({
-      jql: jql,
-      maxResults: '20',
-      fields: 'summary,status,assignee,priority,updated,duedate'
-    });
-
-    const searchResult = await this.request(`/rest/api/${this.apiVersion}/search?${searchParams.toString()}`);
-    const issues = searchResult.issues || [];
-
-    return issues.map(issue => {
+    const formatIssue = (issue) => {
       const statusObj = issue.fields.status || {};
       const priorityObj = issue.fields.priority || {};
       return {
@@ -468,6 +459,33 @@ export class JiraApiClient {
         updated: issue.fields.updated || new Date().toISOString(),
         url: `${this.serverUrl}/browse/${issue.key}`
       };
-    });
+    };
+
+    try {
+      const searchParams = new URLSearchParams({
+        jql: jql,
+        maxResults: '20',
+        fields: 'summary,status,assignee,priority,updated,duedate'
+      });
+
+      const searchResult = await this.request(`/rest/api/${this.apiVersion}/search?${searchParams.toString()}`);
+      const issues = searchResult.issues || [];
+      return issues.map(formatIssue);
+    } catch (err) {
+      console.warn(`[JiraApiClient] fetchTabIssues JQL error ("${jql}"), executing fallback JQL:`, err.message);
+      const fallbackJql = tabType === 'watched' 
+        ? 'watcher = currentUser() ORDER BY updated DESC'
+        : 'assignee = currentUser() ORDER BY updated DESC';
+
+      const searchParams = new URLSearchParams({
+        jql: fallbackJql,
+        maxResults: '20',
+        fields: 'summary,status,assignee,priority,updated,duedate'
+      });
+
+      const searchResult = await this.request(`/rest/api/${this.apiVersion}/search?${searchParams.toString()}`);
+      const issues = searchResult.issues || [];
+      return issues.map(formatIssue);
+    }
   }
 }
