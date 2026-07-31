@@ -64,6 +64,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Action Elements
   const btnTestConnection = document.getElementById('btnTestConnection');
   const btnTestSound = document.getElementById('btnTestSound');
+  const btnTestNotif = document.getElementById('btnTestNotif');
   const btnSave = document.getElementById('btnSave');
   const connectionBanner = document.getElementById('connectionBanner');
   const saveStatus = document.getElementById('saveStatus');
@@ -294,6 +295,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         customAudioStatus.textContent = 'Если файл не загружен вручную, подтягивается файл из assets/notice.mp3 или assets/anime_girl.mp3.';
       }
       btnClearCustomAudio.classList.add('hidden');
+    });
+  }
+
+  if (btnTestNotif) {
+    btnTestNotif.addEventListener('click', async () => {
+      try {
+        await chrome.runtime.sendMessage({ action: 'TEST_NOTIFICATION' });
+      } catch (e) {
+        console.error('[Options] Error triggering test notification:', e);
+      }
     });
   }
 
