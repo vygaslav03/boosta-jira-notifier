@@ -159,6 +159,70 @@ body {
   gap: 6px;
 }
 
+/* Tab Navigation Bar */
+.tab-bar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 12px;
+  background-color: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.tab-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 9px;
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.tab-btn:hover {
+  background-color: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.tab-btn.active {
+  background-color: var(--bg-card);
+  color: var(--accent-color);
+  border-color: var(--border-color);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Status & Issue Badges */
+.issue-status-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.issue-status-badge.new { background-color: rgba(59, 130, 246, 0.12); color: #2563EB; }
+.issue-status-badge.indeterminate { background-color: rgba(245, 158, 11, 0.12); color: #D97706; }
+.issue-status-badge.done { background-color: rgba(16, 185, 129, 0.12); color: #059669; }
+
+.priority-tag {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
 /* Buttons */
 .btn {
   display: inline-flex;
