@@ -2,6 +2,7 @@
   "manifest_version": 3,
   "name": "Boosta Jira Notifier",
   "version": "1.0.0",
+  "default_locale": "en",
   "description": "Boosta Jira Notifier - Real-time background notifications for Jira mentions, assignments, comments, status changes, and code reviews.",
   "author": "Boosta Engineering Team",
   "icons": {
