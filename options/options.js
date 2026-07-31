@@ -248,7 +248,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       if (response && response.success) {
         const u = response.user || {};
-        showBanner(true, `<strong>Connection Successful!</strong> Connected to <strong>Jira ${u.jiraType === 'server' ? 'Server / Data Center' : 'Cloud'}</strong> as <strong>${escapeHtml(u.displayName)}</strong> (${escapeHtml(u.username || u.emailAddress || '')}).`);
+        await storageManager.save(config);
+        chrome.runtime.sendMessage({ action: 'MANUAL_SYNC' }).catch(() => {});
+        showBanner(true, `<strong>Connection Successful!</strong> Connected to <strong>Jira ${u.jiraType === 'server' ? 'Server / Data Center' : 'Cloud'}</strong> as <strong>${escapeHtml(u.displayName)}</strong> (${escapeHtml(u.username || u.emailAddress || '')}). Settings saved automatically!`);
       } else {
         const err = response ? response.error : 'Unknown connection error';
         showBanner(false, `<strong>Connection Failed:</strong> ${escapeHtml(err)}`);
