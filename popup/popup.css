@@ -306,6 +306,12 @@ body {
 .notif-type-tag.status { color: var(--warning-color); }
 .notif-type-tag.review { color: var(--danger-color); }
 
+.issue-key-badge-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
 .issue-key {
   font-weight: 700;
   font-size: 11px;
@@ -313,6 +319,36 @@ body {
   padding: 2px 6px;
   border-radius: 3px;
   color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+.btn-copy-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 20px;
+  padding: 2px;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-copy-tag:hover {
+  background-color: var(--accent-light);
+  color: var(--accent-color);
+  border-color: var(--accent-color);
+  transform: scale(1.08);
+}
+
+.btn-copy-tag.copied {
+  background-color: var(--success-bg) !important;
+  color: var(--success-color) !important;
+  border-color: var(--success-color) !important;
+  transform: scale(1.05);
 }
 
 .notif-title {
