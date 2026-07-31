@@ -50,6 +50,42 @@ export class NotificationManager {
     });
   }
 
+  isDndActive(settings) {
+    if (settings.dndUntil) {
+      const until = new Date(settings.dndUntil).getTime();
+      if (Date.now() < until) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  isQuietHours(settings) {
+    if (!settings.enableQuietHours) return false;
+
+    const now = new Date();
+    const day = now.getDay();
+    if (settings.quietHoursWeekends && (day === 0 || day === 6)) {
+      return true;
+    }
+
+    const startStr = settings.quietHoursStart || '19:00';
+    const endStr = settings.quietHoursEnd || '09:00';
+
+    const [startH, startM] = (startStr || '19:00').split(':').map(Number);
+    const [endH, endM] = (endStr || '09:00').split(':').map(Number);
+
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+    const startMinutes = startH * 60 + startM;
+    const endMinutes = endH * 60 + endM;
+
+    if (startMinutes > endMinutes) {
+      return currentMinutes >= startMinutes || currentMinutes < endMinutes;
+    } else {
+      return currentMinutes >= startMinutes && currentMinutes < endMinutes;
+    }
+  }
+
   async processEvents(events, settings, completedIssueKeys = []) {
     if (settings.autoClearCompleted !== false && completedIssueKeys && completedIssueKeys.length > 0) {
       await this.autoClearCompletedNotifications(completedIssueKeys);
@@ -71,16 +107,18 @@ export class NotificationManager {
     if (newEventsToAlert.length === 0) return 0;
     await storageManager.addKnownEvents(newEventIds);
 
+    const isSilenced = this.isDndActive(settings) || this.isQuietHours(settings);
+
     let alertCount = 0;
     for (const event of newEventsToAlert) {
       await storageManager.addNotification(event);
-      if (settings.enableNotifications !== false) {
+      if (settings.enableNotifications !== false && !isSilenced) {
         await this.createDesktopNotification(event);
         alertCount++;
       }
     }
 
-    if (alertCount > 0 && settings.enableSound !== false) {
+    if (alertCount > 0 && settings.enableSound !== false && !isSilenced) {
       this.playChimeSound(settings.soundType || 'anime');
     }
 
