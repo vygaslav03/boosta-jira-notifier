@@ -144,34 +144,56 @@ export class NotificationManager {
     const eventType = event.type || 'event';
     const author = event.authorName || 'Jira System';
     const url = event.url || '';
+    const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
     let icon = '🔔';
-    if (eventType === 'mention') icon = '💬';
-    if (eventType === 'assignment') icon = '📋';
-    if (eventType === 'status') icon = '🔄';
-    if (eventType === 'review') icon = '🚨';
-    if (eventType === 'due_date') icon = '⏰';
+    let titleText = 'Уведомление Jira';
+    if (eventType === 'mention') { icon = '💬'; titleText = 'Упоминание в Jira'; }
+    if (eventType === 'assignment') { icon = '📋'; titleText = 'Назначение задачи'; }
+    if (eventType === 'status') { icon = '🔄'; titleText = 'Изменение статуса'; }
+    if (eventType === 'review') { icon = '🚨'; titleText = 'Запрос ревью'; }
+    if (eventType === 'due_date') { icon = '⏰'; titleText = 'Дедлайн задачи'; }
 
-    let text = `${icon} <b>Boosta Jira: ${this.escapeHtml(eventType.toUpperCase())}</b>\n\n`;
+    let text = `${icon} <b>${titleText}</b>\n━━━━━━━━━━━━━━━━━━\n`;
     if (issueKey) {
-      text += `📌 <b>Task:</b> <a href="${url}">${this.escapeHtml(issueKey)}</a> - ${this.escapeHtml(issueSummary)}\n`;
-    } else {
-      text += `📌 <b>Summary:</b> ${this.escapeHtml(issueSummary)}\n`;
+      text += `📌 <b>Задача:</b> <a href="${url}"><b>${this.escapeHtml(issueKey)}</b></a>\n`;
+      if (issueSummary) {
+        text += `📝 <i>${this.escapeHtml(issueSummary)}</i>\n\n`;
+      }
+    } else if (issueSummary) {
+      text += `📝 <i>${this.escapeHtml(issueSummary)}</i>\n\n`;
     }
-    text += `👤 <b>Author:</b> ${this.escapeHtml(author)}\n`;
-    text += `💬 <b>Details:</b> ${this.escapeHtml(event.message || '')}`;
+
+    text += `👤 <b>Автор:</b> <code>${this.escapeHtml(author)}</code>\n`;
+
+    if (event.message) {
+      text += `💬 <b>Детали:</b>\n<blockquote>${this.escapeHtml(event.message)}</blockquote>\n`;
+    }
+
+    text += `━━━━━━━━━━━━━━━━━━\n⏰ <i>${timeStr} • Boosta Jira Notifier</i>`;
+
+    const inlineKeyboard = url ? {
+      inline_keyboard: [
+        [{ text: `🔗 Открыть ${issueKey || 'задачу'} в Jira ↗`, url: url }]
+      ]
+    } : null;
 
     try {
       const apiUrl = `https://api.telegram.org/bot${token}/sendMessage`;
+      const body = {
+        chat_id: chatId,
+        text: text,
+        parse_mode: 'HTML',
+        disable_web_page_preview: true
+      };
+      if (inlineKeyboard) {
+        body.reply_markup = inlineKeyboard;
+      }
+
       await fetch(apiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          chat_id: chatId,
-          text: text,
-          parse_mode: 'HTML',
-          disable_web_page_preview: false
-        })
+        body: JSON.stringify(body)
       });
     } catch (err) {
       console.error('[NotificationManager] Error sending Telegram notification:', err);
