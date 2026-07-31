@@ -288,6 +288,44 @@ export class StorageManager {
       return false;
     }
   }
+
+  async getLogs() {
+    try {
+      const data = await this.localStorage.get('debugLogs');
+      return data.debugLogs || [];
+    } catch (error) {
+      console.error('[StorageManager] Error fetching debugLogs:', error);
+      return [];
+    }
+  }
+
+  async addLog(level = 'INFO', moduleName = 'System', message = '') {
+    try {
+      const currentLogs = await this.getLogs();
+      const newEntry = {
+        timestamp: new Date().toISOString(),
+        level: level,
+        module: moduleName,
+        message: String(message)
+      };
+      const updatedLogs = [newEntry, ...currentLogs].slice(0, 50);
+      await this.localStorage.set({ debugLogs: updatedLogs });
+      return true;
+    } catch (error) {
+      console.error('[StorageManager] Error adding log entry:', error);
+      return false;
+    }
+  }
+
+  async clearLogs() {
+    try {
+      await this.localStorage.set({ debugLogs: [] });
+      return true;
+    } catch (error) {
+      console.error('[StorageManager] Error clearing debugLogs:', error);
+      return false;
+    }
+  }
 }
 
 export const storageManager = new StorageManager();
