@@ -145,7 +145,7 @@ export class JiraApiClient {
     const searchParams = new URLSearchParams({
       jql: jql,
       maxResults: '50',
-      fields: 'summary,status,assignee,reporter,comment,updated,created,resolution',
+      fields: 'summary,status,assignee,reporter,comment,updated,created,resolution,duedate',
       expand: 'changelog'
     });
 
@@ -172,6 +172,49 @@ export class JiraApiClient {
 
       if (isResolved) {
         completedIssueKeys.push(issueKey);
+      }
+
+      // Check Due Date / Deadline Alerts
+      if (!isResolved && settings.enableDueAlerts !== false && issue.fields.duedate) {
+        try {
+          const dueDateStr = issue.fields.duedate; // e.g. "2026-07-31"
+          const dueDate = new Date(dueDateStr);
+          const now = new Date();
+          const todayDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+          const targetDueDate = new Date(dueDate.getFullYear(), dueDate.getMonth(), dueDate.getDate());
+          const diffMs = targetDueDate - todayDate;
+          const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
+          const maxAlertDays = settings.dueAlertDays !== undefined ? settings.dueAlertDays : 1;
+
+          if (diffDays <= maxAlertDays) {
+            let dueLabel = 'due today';
+            if (diffDays < 0) {
+              dueLabel = `OVERDUE by ${Math.abs(diffDays)} day(s)`;
+            } else if (diffDays === 0) {
+              dueLabel = 'due TODAY';
+            } else if (diffDays === 1) {
+              dueLabel = 'due TOMORROW';
+            } else {
+              dueLabel = `due in ${diffDays} days`;
+            }
+
+            events.push({
+              id: `due_${issueKey}_${dueDateStr}`,
+              type: 'due_date',
+              title: `⏰ Deadline Alert: ${issueKey}`,
+              message: `Task "${this.truncateText(issueSummary, 50)}" is ${dueLabel}! (${dueDateStr})`,
+              issueKey: issueKey,
+              issueSummary: issueSummary,
+              url: issueUrl,
+              authorName: 'Jira System',
+              authorAvatar: '',
+              timestamp: new Date().toISOString(),
+              read: false
+            });
+          }
+        } catch (e) {
+          console.warn(`[JiraApiClient] Error parsing duedate for ${issueKey}:`, e);
+        }
       }
 
       // 1. Check Mentions
