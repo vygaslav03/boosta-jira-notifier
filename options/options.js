@@ -57,6 +57,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   const btnClearCustomAudio = document.getElementById('btnClearCustomAudio');
   const customAudioStatus = document.getElementById('customAudioStatus');
 
+  // Telegram Elements
+  const enableTelegramCb = document.getElementById('enableTelegram');
+  const telegramBotTokenInput = document.getElementById('telegramBotToken');
+  const telegramChatIdInput = document.getElementById('telegramChatId');
+  const btnTestTelegram = document.getElementById('btnTestTelegram');
+  const telegramTestStatus = document.getElementById('telegramTestStatus');
+
   let pendingCustomAudioDataUrl = null;
   let pendingCustomAudioName = null;
   let isCustomAudioCleared = false;
@@ -129,11 +136,20 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
       enableNotificationsCb.checked = settings.enableNotifications !== false;
       enableSoundCb.checked = settings.enableSound !== false;
-      soundTypeSelect.value = settings.soundType || 'anime';
       if (languageSelect) {
         languageSelect.value = settings.language || 'ru';
       }
       darkThemeCb.checked = Boolean(settings.darkTheme);
+
+      if (enableTelegramCb) {
+        enableTelegramCb.checked = Boolean(settings.enableTelegram);
+      }
+      if (telegramBotTokenInput) {
+        telegramBotTokenInput.value = settings.telegramBotToken || '';
+      }
+      if (telegramChatIdInput) {
+        telegramChatIdInput.value = settings.telegramChatId || '';
+      }
 
       if (state.customAudioName) {
         customAudioStatus.textContent = `Используется загруженный файл: ${state.customAudioName}`;
@@ -310,6 +326,58 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
+  if (btnTestTelegram) {
+    btnTestTelegram.addEventListener('click', async () => {
+      const token = telegramBotTokenInput ? telegramBotTokenInput.value.trim() : '';
+      const chatId = telegramChatIdInput ? telegramChatIdInput.value.trim() : '';
+
+      if (!token || !chatId) {
+        if (telegramTestStatus) {
+          telegramTestStatus.style.display = 'block';
+          telegramTestStatus.style.color = '#EF4444';
+          telegramTestStatus.textContent = '❌ Укажите Telegram Bot Token и Chat ID';
+        }
+        return;
+      }
+
+      btnTestTelegram.disabled = true;
+      btnTestTelegram.textContent = 'Отправка...';
+      if (telegramTestStatus) {
+        telegramTestStatus.style.display = 'block';
+        telegramTestStatus.style.color = '#6B7280';
+        telegramTestStatus.textContent = 'Отправка тестового сообщения в Telegram...';
+      }
+
+      try {
+        const res = await chrome.runtime.sendMessage({
+          action: 'TEST_TELEGRAM',
+          token: token,
+          chatId: chatId
+        });
+
+        if (res && res.success) {
+          if (telegramTestStatus) {
+            telegramTestStatus.style.color = '#10B981';
+            telegramTestStatus.textContent = '✅ Тестовое сообщение успешно доставлено в Telegram!';
+          }
+        } else {
+          if (telegramTestStatus) {
+            telegramTestStatus.style.color = '#EF4444';
+            telegramTestStatus.textContent = `❌ Ошибка Telegram: ${res ? res.error : 'Не удалось отправить'}`;
+          }
+        }
+      } catch (err) {
+        if (telegramTestStatus) {
+          telegramTestStatus.style.color = '#EF4444';
+          telegramTestStatus.textContent = `❌ Ошибка соединения: ${err.message}`;
+        }
+      } finally {
+        btnTestTelegram.disabled = false;
+        btnTestTelegram.textContent = '✈️ Тест Telegram';
+      }
+    });
+  }
+
   /**
    * Sound Preview Trigger Handler
    */
@@ -459,7 +527,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       enableSound: enableSoundCb.checked,
       soundType: soundTypeSelect.value || 'anime',
       language: languageSelect ? languageSelect.value : 'ru',
-      darkTheme: darkThemeCb.checked
+      darkTheme: darkThemeCb.checked,
+      enableTelegram: enableTelegramCb ? enableTelegramCb.checked : false,
+      telegramBotToken: telegramBotTokenInput ? telegramBotTokenInput.value.trim() : '',
+      telegramChatId: telegramChatIdInput ? telegramChatIdInput.value.trim() : ''
     };
 
     btnSave.disabled = true;
