@@ -116,14 +116,74 @@ export class NotificationManager {
         await this.createDesktopNotification(event);
         alertCount++;
       }
+      if (settings.enableTelegram && !isSilenced) {
+        await this.sendTelegramNotification(event, settings);
+      }
     }
 
     if (alertCount > 0 && settings.enableSound !== false && !isSilenced) {
-      this.playChimeSound(settings.soundType || 'anime');
+      const soundType = settings.soundType || 'anime';
+      await this.playChimeSound(soundType);
     }
 
     await this.updateExtensionBadge();
     return alertCount;
+  }
+
+  async sendTelegramNotification(event, settings) {
+    if (!settings || !settings.enableTelegram || !settings.telegramBotToken || !settings.telegramChatId) {
+      return;
+    }
+
+    const token = settings.telegramBotToken.trim();
+    const chatId = settings.telegramChatId.trim();
+    if (!token || !chatId) return;
+
+    const issueKey = event.issueKey || '';
+    const issueSummary = event.issueSummary || event.title || '';
+    const eventType = event.type || 'event';
+    const author = event.authorName || 'Jira System';
+    const url = event.url || '';
+
+    let icon = '🔔';
+    if (eventType === 'mention') icon = '💬';
+    if (eventType === 'assignment') icon = '📋';
+    if (eventType === 'status') icon = '🔄';
+    if (eventType === 'review') icon = '🚨';
+    if (eventType === 'due_date') icon = '⏰';
+
+    let text = `${icon} <b>Boosta Jira: ${this.escapeHtml(eventType.toUpperCase())}</b>\n\n`;
+    if (issueKey) {
+      text += `📌 <b>Task:</b> <a href="${url}">${this.escapeHtml(issueKey)}</a> - ${this.escapeHtml(issueSummary)}\n`;
+    } else {
+      text += `📌 <b>Summary:</b> ${this.escapeHtml(issueSummary)}\n`;
+    }
+    text += `👤 <b>Author:</b> ${this.escapeHtml(author)}\n`;
+    text += `💬 <b>Details:</b> ${this.escapeHtml(event.message || '')}`;
+
+    try {
+      const apiUrl = `https://api.telegram.org/bot${token}/sendMessage`;
+      await fetch(apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: chatId,
+          text: text,
+          parse_mode: 'HTML',
+          disable_web_page_preview: false
+        })
+      });
+    } catch (err) {
+      console.error('[NotificationManager] Error sending Telegram notification:', err);
+    }
+  }
+
+  escapeHtml(str) {
+    return String(str || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
   }
 
   async autoClearCompletedNotifications(completedIssueKeys = []) {
