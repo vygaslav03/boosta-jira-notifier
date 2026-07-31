@@ -1,0 +1,56 @@
+/**
+ * === jiraInject.css ===
+ * Boosta Jira Notifier - Injected Copy Buttons Styling for Jira Web Pages
+ */
+
+.boosta-copy-container {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 10px;
+  vertical-align: middle;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.boosta-copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  height: 24px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #172B4D;
+  background-color: #F4F5F7;
+  border: 1px solid #DFE1E6;
+  cursor: pointer;
+  outline: none;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  line-height: 1;
+  box-shadow: 0 1px 2px rgba(9, 30, 66, 0.08);
+}
+
+.boosta-copy-btn:hover {
+  background-color: #EA1C2C;
+  color: #FFFFFF;
+  border-color: #EA1C2C;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(234, 28, 44, 0.3);
+}
+
+.boosta-copy-btn.secondary {
+  background-color: #EBECF0;
+  color: #42526E;
+}
+
+.boosta-copy-btn.copied {
+  background-color: #36B37E !important;
+  color: #FFFFFF !important;
+  border-color: #36B37E !important;
+}
+
+.boosta-copy-btn .b-icon {
+  flex-shrink: 0;
+}
