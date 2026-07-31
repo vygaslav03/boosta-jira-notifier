@@ -50,6 +50,20 @@
     return { key, summary };
   }
 
+  function generateGitBranch(key, summary) {
+    if (!summary) return `feature/${key}`;
+    const cleanSummary = summary
+      .toLowerCase()
+      .replace(/[^\w\s-]/g, '')
+      .trim()
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .slice(0, 45);
+    
+    const prefix = /bug|fix|error|fail/i.test(summary) ? 'bugfix' : 'feature';
+    return `${prefix}/${key}-${cleanSummary}`;
+  }
+
   function injectCopyButtons() {
     const { key, summary } = extractIssueData();
     if (!key) return;
@@ -83,6 +97,8 @@
     container.setAttribute('data-key', key);
 
     const fullTag = summary ? `[${key}] ${summary}` : `[${key}]`;
+    const gitBranch = generateGitBranch(key, summary);
+    const markdownLink = summary ? `[${key}: ${summary}](${window.location.href})` : `[${key}](${window.location.href})`;
 
     container.innerHTML = `
       <button type="button" class="boosta-copy-btn key-btn" title="Скопировать номер: ${key}">
@@ -92,18 +108,36 @@
         </svg>
         <span class="b-text">${key}</span>
       </button>
-      <button type="button" class="boosta-copy-btn tag-btn" title="Скопировать тег с названием: ${fullTag}">
+      <button type="button" class="boosta-copy-btn tag-btn" title="Скопировать тег: ${fullTag}">
         <svg class="b-icon" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"></path>
           <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
         </svg>
         <span class="b-text">[Tag]</span>
       </button>
+      <button type="button" class="boosta-copy-btn branch-btn" title="Скопировать Git-ветку: ${gitBranch}">
+        <svg class="b-icon" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="6" y1="3" x2="6" y2="15"></line>
+          <circle cx="18" cy="6" r="3"></circle>
+          <circle cx="6" cy="18" r="3"></circle>
+          <path d="M18 9a9 9 0 01-9 9"></path>
+        </svg>
+        <span class="b-text">🌿 Git</span>
+      </button>
+      <button type="button" class="boosta-copy-btn link-btn" title="Скопировать Markdown ссылку: ${markdownLink}">
+        <svg class="b-icon" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"></path>
+          <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"></path>
+        </svg>
+        <span class="b-text">🔗 Link</span>
+      </button>
     `;
 
     // Add event listeners
     const keyBtn = container.querySelector('.key-btn');
     const tagBtn = container.querySelector('.tag-btn');
+    const branchBtn = container.querySelector('.branch-btn');
+    const linkBtn = container.querySelector('.link-btn');
 
     keyBtn.addEventListener('click', async (e) => {
       e.preventDefault();
@@ -140,6 +174,48 @@
         }, 1500);
       } catch (err) {
         console.error('[Boosta Notifier] Copy tag error:', err);
+      }
+    });
+
+    branchBtn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      try {
+        const latestData = extractIssueData();
+        const branchName = generateGitBranch(key, latestData.summary);
+        await navigator.clipboard.writeText(branchName);
+        const textSpan = branchBtn.querySelector('.b-text');
+        const origText = textSpan.textContent;
+        branchBtn.classList.add('copied');
+        textSpan.textContent = '✓ Copied Branch!';
+        setTimeout(() => {
+          branchBtn.classList.remove('copied');
+          textSpan.textContent = origText;
+        }, 1500);
+      } catch (err) {
+        console.error('[Boosta Notifier] Copy branch error:', err);
+      }
+    });
+
+    linkBtn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      try {
+        const latestData = extractIssueData();
+        const latestMarkdown = latestData.summary 
+          ? `[${key}: ${latestData.summary}](${window.location.href})` 
+          : `[${key}](${window.location.href})`;
+        await navigator.clipboard.writeText(latestMarkdown);
+        const textSpan = linkBtn.querySelector('.b-text');
+        const origText = textSpan.textContent;
+        linkBtn.classList.add('copied');
+        textSpan.textContent = '✓ Copied Link!';
+        setTimeout(() => {
+          linkBtn.classList.remove('copied');
+          textSpan.textContent = origText;
+        }, 1500);
+      } catch (err) {
+        console.error('[Boosta Notifier] Copy link error:', err);
       }
     });
 
