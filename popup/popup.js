@@ -145,6 +145,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       const iconSvg = getTypeIconSvg(item.type);
       const relativeTime = formatRelativeTime(item.timestamp);
+      const issueKey = item.issueKey || '';
+      const title = item.title || item.issueSummary || '';
+      const tagText = issueKey ? (title ? `[${issueKey}] ${title}` : `[${issueKey}]`) : title;
 
       card.innerHTML = `
         <div class="notif-top">
@@ -152,9 +155,22 @@ document.addEventListener('DOMContentLoaded', async () => {
             ${iconSvg}
             <span>${capitalize(item.type || 'event')}</span>
           </div>
-          <span class="issue-key">${escapeHtml(item.issueKey || '')}</span>
+          <div class="issue-key-badge-group">
+            <span class="issue-key">${escapeHtml(issueKey)}</span>
+            ${issueKey ? `
+              <button class="btn-copy-tag" title="Скопировать тег: ${escapeHtml(tagText)}" aria-label="Copy task tag">
+                <svg class="copy-icon" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"></path>
+                </svg>
+                <svg class="check-icon" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" style="display:none;">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </button>
+            ` : ''}
+          </div>
         </div>
-        <div class="notif-title" title="${escapeHtml(item.title || '')}">${escapeHtml(item.title || '')}</div>
+        <div class="notif-title" title="${escapeHtml(title)}">${escapeHtml(title)}</div>
         <div class="notif-message">${escapeHtml(item.message || '')}</div>
         <div class="notif-footer">
           <span>${escapeHtml(item.authorName || 'Jira System')}</span>
@@ -162,7 +178,31 @@ document.addEventListener('DOMContentLoaded', async () => {
         </div>
       `;
 
-      // Handle click to open Jira issue
+      // Handle copy tag button click
+      const btnCopy = card.querySelector('.btn-copy-tag');
+      if (btnCopy) {
+        btnCopy.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          try {
+            await navigator.clipboard.writeText(tagText);
+            const copyIcon = btnCopy.querySelector('.copy-icon');
+            const checkIcon = btnCopy.querySelector('.check-icon');
+            btnCopy.classList.add('copied');
+            if (copyIcon) copyIcon.style.display = 'none';
+            if (checkIcon) checkIcon.style.display = 'inline-block';
+
+            setTimeout(() => {
+              btnCopy.classList.remove('copied');
+              if (copyIcon) copyIcon.style.display = 'inline-block';
+              if (checkIcon) checkIcon.style.display = 'none';
+            }, 1500);
+          } catch (err) {
+            console.error('[Popup] Copy error:', err);
+          }
+        });
+      }
+
+      // Handle card click to open Jira issue
       card.addEventListener('click', async () => {
         if (item.url) {
           await chrome.tabs.create({ url: item.url, active: true });
