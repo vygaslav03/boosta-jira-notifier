@@ -331,8 +331,17 @@ document.addEventListener('DOMContentLoaded', async () => {
       const iconSvg = getTypeIconSvg(item.type);
       const relativeTime = formatRelativeTime(item.timestamp);
       const issueKey = item.issueKey || '';
-      const title = item.title || item.issueSummary || '';
-      const tagText = issueKey ? (title ? `[${issueKey}] ${title}` : `[${issueKey}]`) : title;
+      
+      // Clean up issue summary or title to avoid "Status updated: KEY" duplicates
+      let summary = item.issueSummary || '';
+      if (!summary && item.title) {
+        summary = item.title
+          .replace(/^(Status updated|You were mentioned in|Assigned to you|New Comment on|Review Requested|⏰ Deadline Alert):\s*/i, '')
+          .replace(new RegExp(`^${issueKey}\\s*`, 'i'), '')
+          .trim();
+      }
+      const displayTitle = item.issueSummary || item.title || '';
+      const tagText = issueKey ? (summary ? `[${issueKey}] ${summary}` : `[${issueKey}]`) : summary;
 
       card.innerHTML = `
         <div class="notif-top">
