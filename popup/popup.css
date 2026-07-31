@@ -196,6 +196,36 @@ body {
   color: var(--text-primary);
 }
 
+.btn-icon-only.active {
+  background-color: var(--accent-light);
+  color: var(--accent-color);
+  border-color: var(--accent-color);
+}
+
+.dnd-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 16px;
+  background-color: #FFF3C4;
+  color: #7A4D00;
+  font-size: 11px;
+  font-weight: 600;
+  border-bottom: 1px solid #FFE380;
+}
+
+[data-theme="dark"] .dnd-banner {
+  background-color: #382C00;
+  color: #FFEC99;
+  border-bottom-color: #5C4800;
+}
+
+.dnd-banner .dnd-off-btn {
+  color: var(--accent-color);
+  font-weight: 700;
+  margin-left: 8px;
+}
+
 .spinning {
   animation: spin 1s linear infinite;
 }
@@ -305,6 +335,7 @@ body {
 .notif-type-tag.comment { color: #6554C0; }
 .notif-type-tag.status { color: var(--warning-color); }
 .notif-type-tag.review { color: var(--danger-color); }
+.notif-type-tag.due_date { color: #D97706; }
 
 .issue-key-badge-group {
   display: flex;
