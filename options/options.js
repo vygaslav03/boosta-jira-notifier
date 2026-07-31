@@ -10,6 +10,7 @@
 
 import { storageManager } from '../background/storage.js';
 import { AuthManager } from '../background/authManager.js';
+import { t } from '../background/i18n.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
   // UI Elements
@@ -45,6 +46,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const enableNotificationsCb = document.getElementById('enableNotifications');
   const enableSoundCb = document.getElementById('enableSound');
   const soundTypeSelect = document.getElementById('soundType');
+  const languageSelect = document.getElementById('languageSelect');
   const darkThemeCb = document.getElementById('darkTheme');
   const customAudioInput = document.getElementById('customAudioInput');
   const btnClearCustomAudio = document.getElementById('btnClearCustomAudio');
@@ -107,6 +109,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       enableNotificationsCb.checked = settings.enableNotifications !== false;
       enableSoundCb.checked = settings.enableSound !== false;
       soundTypeSelect.value = settings.soundType || 'anime';
+      if (languageSelect) {
+        languageSelect.value = settings.language || 'ru';
+      }
       darkThemeCb.checked = Boolean(settings.darkTheme);
 
       if (state.customAudioName) {
@@ -415,6 +420,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       enableNotifications: enableNotificationsCb.checked,
       enableSound: enableSoundCb.checked,
       soundType: soundTypeSelect.value || 'anime',
+      language: languageSelect ? languageSelect.value : 'ru',
       darkTheme: darkThemeCb.checked
     };
 
