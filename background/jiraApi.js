@@ -431,4 +431,43 @@ export class JiraApiClient {
     if (text.length <= maxLength) return text;
     return text.substring(0, maxLength) + '...';
   }
+
+  /**
+   * Fetches issues for quick bookmarks/tabs in Popup view.
+   * 
+   * @param {string} tabType 'assigned', 'watched', or 'review'
+   * @returns {Promise<Array<Object>>} List of issue objects formatted for UI display.
+   */
+  async fetchTabIssues(tabType = 'assigned') {
+    let jql = 'assignee = currentUser() AND resolution = Unresolved ORDER BY updated DESC';
+    if (tabType === 'watched') {
+      jql = 'watcher = currentUser() AND resolution = Unresolved ORDER BY updated DESC';
+    } else if (tabType === 'review') {
+      jql = 'resolution = Unresolved AND (status in ("In Review", "Code Review", "Review", "Approved") OR text ~ "review") ORDER BY updated DESC';
+    }
+
+    const searchParams = new URLSearchParams({
+      jql: jql,
+      maxResults: '20',
+      fields: 'summary,status,assignee,priority,updated,duedate'
+    });
+
+    const searchResult = await this.request(`/rest/api/${this.apiVersion}/search?${searchParams.toString()}`);
+    const issues = searchResult.issues || [];
+
+    return issues.map(issue => {
+      const statusObj = issue.fields.status || {};
+      const priorityObj = issue.fields.priority || {};
+      return {
+        key: issue.key,
+        summary: issue.fields.summary || 'No Summary',
+        statusName: statusObj.name || 'Unknown',
+        statusCategory: (statusObj.statusCategory && statusObj.statusCategory.key) || 'indeterminate',
+        priorityName: priorityObj.name || '',
+        dueDate: issue.fields.duedate || null,
+        updated: issue.fields.updated || new Date().toISOString(),
+        url: `${this.serverUrl}/browse/${issue.key}`
+      };
+    });
+  }
 }
