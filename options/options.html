@@ -188,6 +188,56 @@
                 <span>Automatically mark notifications as read when an issue is moved to Done / Resolved / Closed</span>
               </div>
             </label>
+
+            <label class="checkbox-card">
+              <input type="checkbox" id="enableDueAlerts" checked>
+              <div class="checkbox-body">
+                <strong data-i18n="evtDueAlertsTitle">Due Date / Deadline Alerts</strong>
+                <span data-i18n="evtDueAlertsDesc">Alert when assigned issues are due today or overdue</span>
+              </div>
+            </label>
+          </div>
+        </section>
+
+        <!-- Section: Quiet Hours & Smart Alerts -->
+        <section class="card">
+          <h2 class="card-title">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path></svg>
+            <span data-i18n="secSmartAlerts">Smart Alerts & Quiet Hours</span>
+          </h2>
+
+          <div class="toggle-row">
+            <div>
+              <strong data-i18n="quietHoursTitle">Quiet Hours (Off-work Mute)</strong>
+              <p class="form-help" data-i18n="quietHoursDesc">Silence sound & desktop popups during off-work hours</p>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="enableQuietHours">
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="form-grid" style="margin-top: 12px;">
+            <div class="form-group">
+              <label for="quietHoursStart" class="form-label" data-i18n="quietStartLabel">Quiet Hours Start</label>
+              <input type="time" id="quietHoursStart" class="form-input" value="19:00">
+            </div>
+
+            <div class="form-group">
+              <label for="quietHoursEnd" class="form-label" data-i18n="quietEndLabel">Quiet Hours End</label>
+              <input type="time" id="quietHoursEnd" class="form-input" value="09:00">
+            </div>
+          </div>
+
+          <div class="toggle-row" style="margin-top: 12px;">
+            <div>
+              <strong data-i18n="quietWeekendsTitle">Mute on Weekends (Sat / Sun)</strong>
+              <p class="form-help">Automatically mute alerts on Saturday and Sunday</p>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="quietHoursWeekends" checked>
+              <span class="slider"></span>
+            </label>
           </div>
         </section>
 
