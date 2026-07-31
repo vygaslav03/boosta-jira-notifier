@@ -1,0 +1,10 @@
+{
+  "extName": {
+    "message": "Boosta Jira Notifier",
+    "description": "Имя расширения"
+  },
+  "extDescription": {
+    "message": "Фоновые уведомления в реальном времени для упоминаний, назначений, комментариев и статусов в Jira.",
+    "description": "Описание расширения"
+  }
+}
