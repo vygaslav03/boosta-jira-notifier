@@ -43,6 +43,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   const enableStatusCb = document.getElementById('enableStatus');
   const enableReviewCb = document.getElementById('enableReview');
   const autoClearCompletedCb = document.getElementById('autoClearCompleted');
+  const enableDueAlertsCb = document.getElementById('enableDueAlerts');
+  const enableQuietHoursCb = document.getElementById('enableQuietHours');
+  const quietHoursStartInput = document.getElementById('quietHoursStart');
+  const quietHoursEndInput = document.getElementById('quietHoursEnd');
+  const quietHoursWeekendsCb = document.getElementById('quietHoursWeekends');
   const enableNotificationsCb = document.getElementById('enableNotifications');
   const enableSoundCb = document.getElementById('enableSound');
   const soundTypeSelect = document.getElementById('soundType');
@@ -105,6 +110,21 @@ document.addEventListener('DOMContentLoaded', async () => {
       enableReviewCb.checked = settings.enableReview !== false;
       if (autoClearCompletedCb) {
         autoClearCompletedCb.checked = settings.autoClearCompleted !== false;
+      }
+      if (enableDueAlertsCb) {
+        enableDueAlertsCb.checked = settings.enableDueAlerts !== false;
+      }
+      if (enableQuietHoursCb) {
+        enableQuietHoursCb.checked = Boolean(settings.enableQuietHours);
+      }
+      if (quietHoursStartInput) {
+        quietHoursStartInput.value = settings.quietHoursStart || '19:00';
+      }
+      if (quietHoursEndInput) {
+        quietHoursEndInput.value = settings.quietHoursEnd || '09:00';
+      }
+      if (quietHoursWeekendsCb) {
+        quietHoursWeekendsCb.checked = settings.quietHoursWeekends !== false;
       }
       enableNotificationsCb.checked = settings.enableNotifications !== false;
       enableSoundCb.checked = settings.enableSound !== false;
@@ -417,6 +437,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       enableStatus: enableStatusCb.checked,
       enableReview: enableReviewCb.checked,
       autoClearCompleted: autoClearCompletedCb ? autoClearCompletedCb.checked : true,
+      enableDueAlerts: enableDueAlertsCb ? enableDueAlertsCb.checked : true,
+      enableQuietHours: enableQuietHoursCb ? enableQuietHoursCb.checked : false,
+      quietHoursStart: quietHoursStartInput ? quietHoursStartInput.value : '19:00',
+      quietHoursEnd: quietHoursEndInput ? quietHoursEndInput.value : '09:00',
+      quietHoursWeekends: quietHoursWeekendsCb ? quietHoursWeekendsCb.checked : true,
       enableNotifications: enableNotificationsCb.checked,
       enableSound: enableSoundCb.checked,
       soundType: soundTypeSelect.value || 'anime',
