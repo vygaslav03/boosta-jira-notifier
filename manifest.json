@@ -38,7 +38,7 @@
       "matches": [
         "https://*.boosta.co/*",
         "https://*.atlassian.net/*",
-        "https://jira.*/*"
+        "https://*/*"
       ],
       "js": ["content/jiraInject.js"],
       "css": ["content/jiraInject.css"],
