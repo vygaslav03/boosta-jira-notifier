@@ -106,9 +106,9 @@ export class StorageManager {
       }
 
       return {
-        jiraType: syncData.jiraType || DEFAULT_STORAGE_STATE.jiraType,
-        authType: syncData.authType || DEFAULT_STORAGE_STATE.authType,
-        serverUrl: syncData.serverUrl || DEFAULT_STORAGE_STATE.serverUrl,
+        jiraType: syncData.jiraType || localData.jiraType || DEFAULT_STORAGE_STATE.jiraType,
+        authType: syncData.authType || localData.authType || DEFAULT_STORAGE_STATE.authType,
+        serverUrl: syncData.serverUrl || localData.serverUrl || DEFAULT_STORAGE_STATE.serverUrl,
         username: localData.username || DEFAULT_STORAGE_STATE.username,
         email: localData.email || DEFAULT_STORAGE_STATE.email,
         apiToken: localData.apiToken || DEFAULT_STORAGE_STATE.apiToken,
