@@ -33,6 +33,18 @@
     "service_worker": "background/background.js",
     "type": "module"
   },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.boosta.co/*",
+        "https://*.atlassian.net/*",
+        "https://jira.*/*"
+      ],
+      "js": ["content/jiraInject.js"],
+      "css": ["content/jiraInject.css"],
+      "run_at": "document_idle"
+    }
+  ],
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self';"
   },
