@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Boosta Jira Notifier Settings</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <div class="options-container">
+    <!-- Header -->
+    <header class="options-header">
+      <div class="header-brand">
+        <svg viewBox="0 0 32 32" width="32" height="32" fill="none">
+          <rect width="32" height="32" rx="8" fill="url(#boosta-options-grad)"/>
+          <path d="M9 22V10h7.5c2.5 0 4.5 1.2 4.5 3.2 0 1.4-.8 2.4-2 2.8 1.5.4 2.5 1.6 2.5 3.2 0 2.2-2 2.8-5 2.8H9zm4-7h3c1 0 1.8-.5 1.8-1.3S17 12.4 16 12.4h-3V15zm0 5h3.5c1.2 0 2-.5 2-1.4 0-.9-.8-1.4-2-1.4H13V20z" fill="#FFFFFF"/>
+          <defs>
+            <linearGradient id="boosta-options-grad" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#EA1C2C"/>
+              <stop offset="1" stop-color="#FF4D5E"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <div>
+          <h1 class="options-title">Boosta Jira Notifier</h1>
+          <p class="options-subtitle">Extension Configuration & Preferences</p>
+        </div>
+      </div>
+    </header>
+
+    <main class="options-content">
+      <form id="optionsForm" onsubmit="return false;">
+        
+        <!-- Section 1: Jira Deployment Type & Connection -->
+        <section class="card">
+          <h2 class="card-title">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Jira System Connection
+          </h2>
+
+          <div class="form-group">
+            <label class="form-label">Jira Deployment Type</label>
+            <div class="radio-group">
+              <label class="radio-label">
+                <input type="radio" name="jiraType" value="server" checked id="jiraTypeServer">
+                <span><strong>Jira Server / Data Center</strong> (REST API v2)</span>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="jiraType" value="cloud" id="jiraTypeCloud">
+                <span><strong>Jira Cloud</strong> (REST API v3)</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="serverUrl" class="form-label">Jira Server Base URL <span class="required">*</span></label>
+            <input type="url" id="serverUrl" class="form-input" placeholder="https://jira.boosta.co" required>
+            <span class="form-help" id="urlHelp">Enter your Boosta Jira Server URL (e.g., https://jira.boosta.co).</span>
+          </div>
+
+          <!-- Jira Server / Data Center Credentials -->
+          <div id="serverCredsBlock">
+            <div class="form-group">
+              <label class="form-label">Authentication Strategy</label>
+              <div class="radio-group">
+                <label class="radio-label">
+                  <input type="radio" name="serverAuthType" value="pat" checked id="serverAuthPat">
+                  <span>Personal Access Token (PAT / Bearer)</span>
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="serverAuthType" value="basic" id="serverAuthBasic">
+                  <span>Username & Password / Token (Basic)</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="form-group hidden" id="usernameGroup">
+              <label for="username" class="form-label">Jira Username <span class="required">*</span></label>
+              <input type="text" id="username" class="form-input" placeholder="john.doe">
+            </div>
+
+            <div class="form-group">
+              <label for="serverToken" class="form-label" id="tokenLabel">Personal Access Token (PAT) <span class="required">*</span></label>
+              <input type="password" id="serverToken" class="form-input" placeholder="Paste your Jira PAT or Password">
+              <span class="form-help" id="serverTokenHelp">
+                Generate a Personal Access Token in Jira: Click your Avatar icon &rarr; <strong>Profile &rarr; Personal Access Tokens</strong>.
+              </span>
+            </div>
+          </div>
+
+          <!-- Jira Cloud Credentials -->
+          <div id="cloudCredsBlock" class="hidden">
+            <div class="form-group">
+              <label for="cloudEmail" class="form-label">Atlassian Account Email <span class="required">*</span></label>
+              <input type="email" id="cloudEmail" class="form-input" placeholder="user@boosta.co">
+            </div>
+
+            <div class="form-group">
+              <label for="cloudApiToken" class="form-label">Jira Cloud API Token <span class="required">*</span></label>
+              <input type="password" id="cloudApiToken" class="form-input" placeholder="Paste Cloud API token">
+              <span class="form-help">
+                Generate a Cloud API Token at <a href="https://id.atlassian.com/manage-profile/security/api-tokens" target="_blank" rel="noopener">id.atlassian.com</a>.
+              </span>
+            </div>
+          </div>
+
+          <div class="form-actions-inline">
+            <button id="btnTestConnection" class="btn btn-outline" type="button">
+              <svg class="btn-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              Test Connection
+            </button>
+          </div>
+
+          <div id="connectionBanner" class="alert-banner hidden"></div>
+        </section>
+
+        <!-- Section 2: Polling & Sync Settings -->
+        <section class="card">
+          <h2 class="card-title">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Background Sync Frequency
+          </h2>
+
+          <div class="form-group">
+            <label for="checkInterval" class="form-label">Check Interval (Seconds)</label>
+            <select id="checkInterval" class="form-select">
+              <option value="15">15 seconds (High Frequency)</option>
+              <option value="30" selected>30 seconds (Recommended)</option>
+              <option value="60">60 seconds (1 minute)</option>
+              <option value="120">120 seconds (2 minutes)</option>
+            </select>
+            <span class="form-help">Lower intervals provide faster alerts.</span>
+          </div>
+        </section>
+
+        <!-- Section 3: Notification Events Filter -->
+        <section class="card">
+          <h2 class="card-title">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+            Monitored Event Types
+          </h2>
+
+          <div class="checkbox-grid">
+            <label class="checkbox-card">
+              <input type="checkbox" id="enableMentions" checked>
+              <div class="checkbox-body">
+                <strong>@Mentions</strong>
+                <span>Alert when someone mentions your account in comments or issues</span>
+              </div>
+            </label>
+
+            <label class="checkbox-card">
+              <input type="checkbox" id="enableAssignment" checked>
+              <div class="checkbox-body">
+                <strong>Task Assignment</strong>
+                <span>Alert when an issue is assigned to you</span>
+              </div>
+            </label>
+
+            <label class="checkbox-card">
+              <input type="checkbox" id="enableComments" checked>
+              <div class="checkbox-body">
+                <strong>New Comments</strong>
+                <span>Alert when comments are posted on issues you watch/assigned</span>
+              </div>
+            </label>
+
+            <label class="checkbox-card">
+              <input type="checkbox" id="enableStatus" checked>
+              <div class="checkbox-body">
+                <strong>Status Changes</strong>
+                <span>Alert when issue status transitions occur</span>
+              </div>
+            </label>
+
+            <label class="checkbox-card">
+              <input type="checkbox" id="enableReview" checked>
+              <div class="checkbox-body">
+                <strong>Review Requested</strong>
+                <span>Alert when review or approver flags change</span>
+              </div>
+            </label>
+
+            <label class="checkbox-card">
+              <input type="checkbox" id="autoClearCompleted" checked>
+              <div class="checkbox-body">
+                <strong>Auto-Clear Completed Tasks</strong>
+                <span>Automatically mark notifications as read when an issue is moved to Done / Resolved / Closed</span>
+              </div>
+            </label>
+          </div>
+        </section>
+
+        <!-- Section 4: Notifications & Anime Audio Sound -->
+        <section class="card">
+          <h2 class="card-title">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg>
+            Alert Delivery & Sound Preferences
+          </h2>
+
+          <div class="toggle-row">
+            <div>
+              <strong>Desktop Notifications</strong>
+              <p class="form-help">Display system popups in Chrome when new events occur</p>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="enableNotifications" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="toggle-row mt-3">
+            <div>
+              <strong>Audio Sound</strong>
+              <p class="form-help">Play audio voice/chime on incoming alerts</p>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="enableSound" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="form-group mt-3">
+            <label for="soundType" class="form-label">Notification Sound Style</label>
+            <div class="flex-align">
+              <select id="soundType" class="form-select">
+                <option value="anime" selected>🌸 Anime Girl Voice ("Notice me Senpai! / Kyaa~")</option>
+                <option value="chime">🔔 Classic Harmonic Bell Chime</option>
+                <option value="custom">🎵 Custom Audio File (assets/notice.mp3 or Upload)</option>
+              </select>
+              <button type="button" id="btnTestSound" class="btn btn-sm btn-outline">▶ Play Sound</button>
+            </div>
+            <span class="form-help">Choose between Anime Girl voice chime, classic chime, or custom audio file.</span>
+          </div>
+
+          <div class="form-group mt-3" id="customAudioGroup">
+            <label for="customAudioInput" class="form-label">Загрузить свой файл звука (.mp3, .wav, .ogg)</label>
+            <div class="flex-align">
+              <input type="file" id="customAudioInput" accept="audio/*" class="form-input">
+              <button type="button" id="btnClearCustomAudio" class="btn btn-sm btn-outline hidden">🗑 Удалить</button>
+            </div>
+            <span class="form-help" id="customAudioStatus">Если файл не загружен вручную, подтягивается файл из assets/notice.mp3 или assets/anime_girl.mp3.</span>
+          </div>
+        </section>
+
+        <!-- Section 5: Appearance Theme -->
+        <section class="card">
+          <h2 class="card-title">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+            Appearance
+          </h2>
+
+          <div class="toggle-row">
+            <div>
+              <strong>Dark Theme</strong>
+              <p class="form-help">Enable dark mode UI across popup and options pages</p>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="darkTheme">
+              <span class="slider"></span>
+            </label>
+          </div>
+        </section>
+
+        <!-- Save Button Footer -->
+        <div class="options-footer">
+          <button id="btnSave" type="submit" class="btn btn-primary btn-large">
+            Save Settings
+          </button>
+          <span id="saveStatus" class="save-status"></span>
+        </div>
+
+      </form>
+    </main>
+  </div>
+
+  <script type="module" src="options.js"></script>
+</body>
+</html>
