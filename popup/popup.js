@@ -65,6 +65,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
+  const tabBar = document.getElementById('tabBar');
+  if (tabBar) {
+    tabBar.addEventListener('wheel', (e) => {
+      if (e.deltaY !== 0) {
+        tabBar.scrollLeft += e.deltaY;
+        e.preventDefault();
+      }
+    }, { passive: false });
+  }
+
   /**
    * Tab Navigation Listeners & Issue Loaders
    */
