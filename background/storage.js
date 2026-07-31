@@ -32,7 +32,11 @@ export const DEFAULT_SETTINGS = {
   quietHoursEnd: '09:00',   // End time for quiet hours
   quietHoursWeekends: true, // Silence alerts on Saturday and Sunday
   enableDueAlerts: true,    // Alert about upcoming Due Dates / Deadlines
-  dueAlertDays: 1           // Alert N days before Due Date (0 = day of deadline, 1 = 1 day before)
+  dueAlertDays: 1,          // Alert N days before Due Date (0 = day of deadline, 1 = 1 day before)
+  // Telegram Bot Integration
+  enableTelegram: false,    // Send duplicate notifications to Telegram Bot
+  telegramBotToken: '',     // Telegram Bot Token from @BotFather
+  telegramChatId: ''        // User Telegram Chat ID
 };
 
 /**
