@@ -36,7 +36,9 @@ export const DEFAULT_SETTINGS = {
   // Telegram Bot Integration
   enableTelegram: false,    // Send duplicate notifications to Telegram Bot
   telegramBotToken: '',     // Telegram Bot Token from @BotFather
-  telegramChatId: ''        // User Telegram Chat ID
+  telegramChatId: '',       // User Telegram Chat ID
+  enableDailyDigest: true,  // Send daily morning summary to Telegram
+  digestTime: '09:00'       // Daily digest dispatch time
 };
 
 /**
@@ -53,6 +55,7 @@ export const DEFAULT_STORAGE_STATE = {
   oauthToken: null,           // OAuth 2.0 Token object
   settings: { ...DEFAULT_SETTINGS },
   lastSync: null,             // ISO string timestamp of the last successful sync
+  lastDigestDate: '',         // YYYY-MM-DD date of last sent Telegram daily digest
   knownEvents: [],            // Array of unique event IDs already processed
   notificationHistory: [],    // Array of stored notification objects for UI rendering
   cache: {}                   // Auxiliary cache storage
