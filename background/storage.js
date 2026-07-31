@@ -23,6 +23,7 @@ export const DEFAULT_SETTINGS = {
   enableSound: true,         // Play audio notification chime
   soundType: 'anime',        // 'anime' (Anime Girl Voice), 'chime' (Classic Bell), 'custom' (MP3)
   enableNotifications: true, // Display desktop notifications
+  language: 'ru',            // 'en' (English), 'ru' (Russian), 'ua' (Ukrainian)
   darkTheme: false           // Toggle UI theme in popup and options
 };
 
