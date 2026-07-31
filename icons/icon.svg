@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <linearGradient id="jiraGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0052CC" />
+      <stop offset="100%" stop-color="#0065FF" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#000" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <!-- Background Card -->
+  <rect x="8" y="8" width="112" height="112" rx="28" fill="url(#jiraGrad)" filter="url(#shadow)" />
+
+  <!-- Jira Layers / Diamond Symbol -->
+  <path d="M64 26 L94 56 L64 86 L34 56 Z" fill="#FFFFFF" opacity="0.95" />
+  <path d="M64 42 L82 60 L64 78 L46 60 Z" fill="#2684FF" />
+  
+  <!-- Notification Bell Indicator Badge -->
+  <circle cx="94" cy="34" r="16" fill="#FF5630" stroke="#FFFFFF" stroke-width="4" />
+  <path d="M94 24 A 4 4 0 0 1 98 28 V 33 H 90 V 28 A 4 4 0 0 1 94 24 Z" fill="#FFFFFF" />
+  <circle cx="94" cy="38" r="2" fill="#FFFFFF" />
+</svg>
