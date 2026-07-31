@@ -10,6 +10,7 @@
  */
 
 import { AuthManager } from './authManager.js';
+import { storageManager } from './storage.js';
 
 export class JiraApiClient {
   /**
@@ -80,6 +81,7 @@ export class JiraApiClient {
       return await response.json();
     } catch (error) {
       console.error(`[JiraApiClient] Request error for ${fullUrl}:`, error);
+      await storageManager.addLog('ERROR', 'JiraApi', error.message || 'Request failed');
       throw error;
     }
   }
