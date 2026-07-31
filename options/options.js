@@ -63,6 +63,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   const telegramChatIdInput = document.getElementById('telegramChatId');
   const btnTestTelegram = document.getElementById('btnTestTelegram');
   const telegramTestStatus = document.getElementById('telegramTestStatus');
+  const enableDailyDigestCb = document.getElementById('enableDailyDigest');
+  const digestTimeInput = document.getElementById('digestTime');
 
   let pendingCustomAudioDataUrl = null;
   let pendingCustomAudioName = null;
@@ -155,6 +157,12 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
       if (telegramChatIdInput) {
         telegramChatIdInput.value = settings.telegramChatId || '';
+      }
+      if (enableDailyDigestCb) {
+        enableDailyDigestCb.checked = settings.enableDailyDigest !== false;
+      }
+      if (digestTimeInput) {
+        digestTimeInput.value = settings.digestTime || '09:00';
       }
 
       if (state.customAudioName) {
@@ -590,7 +598,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       darkTheme: darkThemeCb.checked,
       enableTelegram: enableTelegramCb ? enableTelegramCb.checked : false,
       telegramBotToken: telegramBotTokenInput ? telegramBotTokenInput.value.trim() : '',
-      telegramChatId: telegramChatIdInput ? telegramChatIdInput.value.trim() : ''
+      telegramChatId: telegramChatIdInput ? telegramChatIdInput.value.trim() : '',
+      enableDailyDigest: enableDailyDigestCb ? enableDailyDigestCb.checked : true,
+      digestTime: digestTimeInput ? digestTimeInput.value : '09:00'
     };
 
     btnSave.disabled = true;
