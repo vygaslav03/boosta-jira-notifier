@@ -26,6 +26,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   let currentServerUrl = '';
   let currentSettings = {};
 
+  const tabBtns = document.querySelectorAll('.tab-btn');
+  const sectionTitle = document.querySelector('.section-title');
+  let activeTab = 'notifications';
+  let storedHistory = [];
+
   /**
    * Initializes the Popup view by requesting background status.
    */
@@ -37,12 +42,18 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (response && response.status === 'success') {
         currentServerUrl = response.serverUrl || '';
         currentSettings = response.settings || {};
+        storedHistory = response.history || [];
         updateStatusBadge(response.configured, response.serverUrl);
         updateLastSyncTime(response.lastSync);
-        renderNotifications(response.history || []);
         updateUnreadBadge(response.unreadCount || 0);
         applyTheme(currentSettings.darkTheme);
         updateDndUI(currentSettings);
+
+        if (activeTab === 'notifications') {
+          renderNotifications(storedHistory);
+        } else {
+          loadTabIssues(activeTab);
+        }
       } else {
         updateStatusBadge(false);
       }
@@ -52,6 +63,140 @@ document.addEventListener('DOMContentLoaded', async () => {
     } finally {
       setSyncingState(false);
     }
+  }
+
+  /**
+   * Tab Navigation Listeners & Issue Loaders
+   */
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const targetTab = btn.getAttribute('data-tab');
+      if (activeTab === targetTab) return;
+
+      activeTab = targetTab;
+      tabBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      if (targetTab === 'notifications') {
+        if (sectionTitle) sectionTitle.textContent = 'Recent Notifications';
+        renderNotifications(storedHistory);
+      } else {
+        if (targetTab === 'assigned' && sectionTitle) sectionTitle.textContent = 'My Assigned Tasks';
+        if (targetTab === 'watched' && sectionTitle) sectionTitle.textContent = 'Watched Issues';
+        if (targetTab === 'review' && sectionTitle) sectionTitle.textContent = 'Issues In Review';
+        loadTabIssues(targetTab);
+      }
+    });
+  });
+
+  async function loadTabIssues(tabType) {
+    notificationList.innerHTML = `
+      <div class="empty-state">
+        <svg class="empty-icon spinning" viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M23 4v6h-6M1 20v-6h6"></path>
+          <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"></path>
+        </svg>
+        <div class="empty-title">Loading tasks...</div>
+      </div>
+    `;
+
+    try {
+      const response = await chrome.runtime.sendMessage({ action: 'GET_TAB_ISSUES', tabType });
+      if (response && response.status === 'success') {
+        renderTabIssues(response.issues || []);
+      } else {
+        notificationList.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-title">Unable to load issues</div>
+            <div>${escapeHtml(response ? response.error : 'Connection error')}</div>
+          </div>
+        `;
+      }
+    } catch (err) {
+      console.error('[Popup] Error loading tab issues:', err);
+      notificationList.innerHTML = `<div class="empty-state"><div class="empty-title">Error loading tasks</div></div>`;
+    }
+  }
+
+  function renderTabIssues(issues) {
+    notificationList.innerHTML = '';
+
+    if (!issues || issues.length === 0) {
+      notificationList.innerHTML = `
+        <div class="empty-state">
+          <svg class="empty-icon" viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5">
+            <polyline points="9 11 12 14 22 4"></polyline>
+            <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"></path>
+          </svg>
+          <div class="empty-title">No issues found</div>
+          <div>No tasks match this filter in Jira.</div>
+        </div>
+      `;
+      return;
+    }
+
+    issues.forEach(issue => {
+      const card = document.createElement('div');
+      card.className = 'notification-card';
+      const tagText = `[${issue.key}] ${issue.summary}`;
+      const relativeTime = formatRelativeTime(issue.updated);
+
+      card.innerHTML = `
+        <div class="notif-top">
+          <span class="issue-status-badge ${issue.statusCategory}">${escapeHtml(issue.statusName)}</span>
+          <div class="issue-key-badge-group">
+            <span class="issue-key">${escapeHtml(issue.key)}</span>
+            <button class="btn-copy-tag" title="Скопировать тег: ${escapeHtml(tagText)}" aria-label="Copy task tag">
+              <svg class="copy-icon" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"></path>
+              </svg>
+              <svg class="check-icon" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" style="display:none;">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div class="notif-title" title="${escapeHtml(issue.summary)}">${escapeHtml(issue.summary)}</div>
+        <div class="notif-footer">
+          <span class="priority-tag">${escapeHtml(issue.priorityName ? `Prior: ${issue.priorityName}` : 'Jira Task')}</span>
+          <span>${relativeTime}</span>
+        </div>
+      `;
+
+      // Handle copy tag button click
+      const btnCopy = card.querySelector('.btn-copy-tag');
+      if (btnCopy) {
+        btnCopy.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          try {
+            await navigator.clipboard.writeText(tagText);
+            const copyIcon = btnCopy.querySelector('.copy-icon');
+            const checkIcon = btnCopy.querySelector('.check-icon');
+            btnCopy.classList.add('copied');
+            if (copyIcon) copyIcon.style.display = 'none';
+            if (checkIcon) checkIcon.style.display = 'inline-block';
+
+            setTimeout(() => {
+              btnCopy.classList.remove('copied');
+              if (copyIcon) copyIcon.style.display = 'inline-block';
+              if (checkIcon) checkIcon.style.display = 'none';
+            }, 1500);
+          } catch (err) {
+            console.error('[Popup] Copy error:', err);
+          }
+        });
+      }
+
+      // Handle card click to open issue in browser tab
+      card.addEventListener('click', async () => {
+        if (issue.url) {
+          await chrome.tabs.create({ url: issue.url, active: true });
+        }
+      });
+
+      notificationList.appendChild(card);
+    });
   }
 
   /**
