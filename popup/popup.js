@@ -16,10 +16,15 @@ document.addEventListener('DOMContentLoaded', async () => {
   const unreadBadge = document.getElementById('unreadBadge');
   const btnSync = document.getElementById('btnSync');
   const btnOpenJira = document.getElementById('btnOpenJira');
+  const btnDnd = document.getElementById('btnDnd');
   const btnSettings = document.getElementById('btnSettings');
   const btnClearHistory = document.getElementById('btnClearHistory');
+  const dndBanner = document.getElementById('dndBanner');
+  const dndText = document.getElementById('dndText');
+  const btnDisableDnd = document.getElementById('btnDisableDnd');
 
   let currentServerUrl = '';
+  let currentSettings = {};
 
   /**
    * Initializes the Popup view by requesting background status.
@@ -31,11 +36,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       if (response && response.status === 'success') {
         currentServerUrl = response.serverUrl || '';
+        currentSettings = response.settings || {};
         updateStatusBadge(response.configured, response.serverUrl);
         updateLastSyncTime(response.lastSync);
         renderNotifications(response.history || []);
         updateUnreadBadge(response.unreadCount || 0);
-        applyTheme(response.settings && response.settings.darkTheme);
+        applyTheme(currentSettings.darkTheme);
+        updateDndUI(currentSettings);
       } else {
         updateStatusBadge(false);
       }
@@ -44,6 +51,29 @@ document.addEventListener('DOMContentLoaded', async () => {
       updateStatusBadge(false);
     } finally {
       setSyncingState(false);
+    }
+  }
+
+  /**
+   * Updates DND Focus Mode Banner and button state.
+   */
+  function updateDndUI(settings) {
+    if (!settings || !dndBanner) return;
+    const dndUntil = settings.dndUntil;
+    const isDndActive = dndUntil && new Date(dndUntil).getTime() > Date.now();
+
+    if (isDndActive) {
+      const untilDate = new Date(dndUntil);
+      const hours = String(untilDate.getHours()).padStart(2, '0');
+      const mins = String(untilDate.getMinutes()).padStart(2, '0');
+      dndText.textContent = `Focus Mode active until ${hours}:${mins}`;
+      dndBanner.style.display = 'flex';
+      btnDnd.classList.add('active');
+      btnDnd.title = `Focus Mode ON (until ${hours}:${mins}). Click to turn off.`;
+    } else {
+      dndBanner.style.display = 'none';
+      btnDnd.classList.remove('active');
+      btnDnd.title = 'Focus Mode (Do Not Disturb)';
     }
   }
 
@@ -253,6 +283,28 @@ document.addEventListener('DOMContentLoaded', async () => {
     chrome.runtime.openOptionsPage();
   });
 
+  btnDnd.addEventListener('click', async () => {
+    const isCurrentlyActive = currentSettings.dndUntil && new Date(currentSettings.dndUntil).getTime() > Date.now();
+    let newDndUntil = null;
+    if (!isCurrentlyActive) {
+      // Activate DND for 1 hour by default
+      newDndUntil = new Date(Date.now() + 60 * 60 * 1000).toISOString();
+    }
+    const updatedSettings = { ...currentSettings, dndUntil: newDndUntil };
+    await chrome.runtime.sendMessage({ action: 'UPDATE_SETTINGS', settings: updatedSettings });
+    currentSettings = updatedSettings;
+    updateDndUI(currentSettings);
+  });
+
+  if (btnDisableDnd) {
+    btnDisableDnd.addEventListener('click', async () => {
+      const updatedSettings = { ...currentSettings, dndUntil: null };
+      await chrome.runtime.sendMessage({ action: 'UPDATE_SETTINGS', settings: updatedSettings });
+      currentSettings = updatedSettings;
+      updateDndUI(currentSettings);
+    });
+  }
+
   btnClearHistory.addEventListener('click', async () => {
     await chrome.runtime.sendMessage({ action: 'CLEAR_HISTORY' });
     loadStatus();
@@ -287,6 +339,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         return `<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>`;
       case 'review':
         return `<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`;
+      case 'due_date':
+        return `<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`;
       default:
         return `<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>`;
     }
