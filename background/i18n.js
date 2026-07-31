@@ -1,0 +1,281 @@
+/**
+ * === i18n.js ===
+ * Boosta Jira Notifier - Internationalization (i18n) Engine
+ * Dual Engine support: English (EN), Russian (RU), Ukrainian (UA).
+ * 
+ * @module background/i18n
+ */
+
+export const TRANSLATIONS = {
+  en: {
+    appTitle: "Boosta Jira Notifier",
+    appSubtitle: "Extension Configuration & Preferences",
+    statusConnected: "Connected",
+    statusDisconnected: "Not Configured",
+    statusChecking: "Checking...",
+    lastSync: "Last sync",
+    syncBtn: "Sync",
+    openJira: "Jira",
+    settings: "Settings",
+    clearHistory: "Clear History",
+    allCaughtUp: "All caught up!",
+    noNotifs: "No new Jira notifications recorded.",
+
+    secJiraConnection: "Jira System Connection",
+    jiraDeploymentType: "Jira Deployment Type",
+    jiraServerDc: "Jira Server / Data Center (REST API v2)",
+    jiraCloud: "Jira Cloud (REST API v3)",
+    serverUrlLabel: "Jira Server Base URL",
+    serverUrlHelpServer: "Enter your Boosta Jira Server URL (e.g., https://jira.boosta.co).",
+    serverUrlHelpCloud: "Enter your Jira Cloud URL (e.g., https://your-company.atlassian.net).",
+    authStrategy: "Authentication Strategy",
+    patLabel: "Personal Access Token (PAT / Bearer)",
+    basicLabel: "Username & Password / Token (Basic)",
+    usernameLabel: "Jira Username",
+    tokenLabelPat: "Personal Access Token (PAT)",
+    tokenLabelBasic: "Password / Token",
+    cloudEmailLabel: "Atlassian Account Email",
+    cloudApiTokenLabel: "Jira Cloud API Token",
+    testConnection: "Test Connection",
+    testing: "Testing...",
+
+    secSyncFrequency: "Background Sync Frequency",
+    checkIntervalLabel: "Check Interval (Seconds)",
+    interval15: "15 seconds (High Frequency)",
+    interval30: "30 seconds (Recommended)",
+    interval60: "60 seconds (1 minute)",
+    interval120: "120 seconds (2 minutes)",
+    intervalHelp: "Lower intervals provide faster alerts.",
+
+    secEventTypes: "Monitored Event Types",
+    evtMentionsTitle: "@Mentions",
+    evtMentionsDesc: "Alert when someone mentions your account in comments or issues",
+    evtAssignmentTitle: "Task Assignment",
+    evtAssignmentDesc: "Alert when an issue is assigned to you",
+    evtCommentsTitle: "New Comments",
+    evtCommentsDesc: "Alert when comments are posted on issues you watch/assigned",
+    evtStatusTitle: "Status Changes",
+    evtStatusDesc: "Alert when issue status transitions occur",
+    evtReviewTitle: "Review Requested",
+    evtReviewDesc: "Alert when review or approver flags change",
+    evtAutoClearTitle: "Auto-Clear Completed Tasks",
+    evtAutoClearDesc: "Automatically mark notifications as read when an issue is moved to Done / Resolved / Closed",
+
+    secSoundNotifs: "Alert Delivery & Sound Preferences",
+    desktopNotifsTitle: "Desktop Notifications",
+    desktopNotifsDesc: "Display system popups in Chrome when new events occur",
+    audioSoundTitle: "Audio Sound",
+    audioSoundDesc: "Play audio voice/chime on incoming alerts",
+    soundStyleLabel: "Notification Sound Style",
+    soundAnime: "🌸 Anime Girl Voice (\"Notice me Senpai! / Kyaa~\")",
+    soundChime: "🔔 Classic Harmonic Bell Chime",
+    soundCustom: "🎵 Custom Audio File (assets/notice.mp3 or Upload)",
+    playSoundBtn: "▶ Play Sound",
+    customSoundLabel: "Upload custom audio file (.mp3, .wav, .ogg)",
+    removeFile: "🗑 Remove",
+    customSoundHelpDefault: "If no custom file uploaded, falls back to assets/notice.mp3 or assets/anime_girl.mp3.",
+    customSoundLoaded: "Loaded file: {name}",
+
+    secLanguage: "Language / Мова / Язык",
+    languageLabel: "Interface Language",
+    langEn: "🇬🇧 English",
+    langRu: "🇷🇺 Русский",
+    langUa: "🇺🇦 Українська",
+
+    secAppearance: "Appearance",
+    darkThemeTitle: "Dark Theme",
+    darkThemeDesc: "Enable dark mode UI across popup and options pages",
+
+    saveSettingsBtn: "Save Settings",
+    savingBtn: "Saving...",
+    saveSuccess: "✓ Settings Saved Successfully!",
+    saveFailed: "Failed to save settings."
+  },
+  ru: {
+    appTitle: "Boosta Jira Notifier",
+    appSubtitle: "Конфигурация и настройки расширения",
+    statusConnected: "Подключено",
+    statusDisconnected: "Не настроено",
+    statusChecking: "Проверка...",
+    lastSync: "Синхронизация",
+    syncBtn: "Обновить",
+    openJira: "Jira",
+    settings: "Настройки",
+    clearHistory: "Очистить историю",
+    allCaughtUp: "Все уведомления прочитаны!",
+    noNotifs: "Новых уведомлений Jira не найдено.",
+
+    secJiraConnection: "Подключение к Jira",
+    jiraDeploymentType: "Тип развертывания Jira",
+    jiraServerDc: "Jira Server / Data Center (REST API v2)",
+    jiraCloud: "Jira Cloud (REST API v3)",
+    serverUrlLabel: "Базовый URL сервера Jira",
+    serverUrlHelpServer: "Введите URL сервера Boosta Jira (например, https://jira.boosta.co).",
+    serverUrlHelpCloud: "Введите URL Jira Cloud (например, https://your-company.atlassian.net).",
+    authStrategy: "Стратегия авторизации",
+    patLabel: "Персональный токен (PAT / Bearer)",
+    basicLabel: "Логин и Пароль / Токен (Basic)",
+    usernameLabel: "Имя пользователя Jira",
+    tokenLabelPat: "Персональный токен доступа (PAT)",
+    tokenLabelBasic: "Пароль / Токен",
+    cloudEmailLabel: "Email аккаунта Atlassian",
+    cloudApiTokenLabel: "API Токен Jira Cloud",
+    testConnection: "Проверить соединение",
+    testing: "Проверка...",
+
+    secSyncFrequency: "Частота фоновой синхронизации",
+    checkIntervalLabel: "Интервал проверки (в секундах)",
+    interval15: "15 секунд (Высокая частота)",
+    interval30: "30 секунд (Рекомендуется)",
+    interval60: "60 секунд (1 минута)",
+    interval120: "120 секунд (2 минуты)",
+    intervalHelp: "Меньший интервал обеспечивает более быструю доставку алертов.",
+
+    secEventTypes: "Отслеживаемые типы событий",
+    evtMentionsTitle: "@Упоминания",
+    evtMentionsDesc: "Уведомлять, когда вас упоминают в комментариях или описании задач",
+    evtAssignmentTitle: "Назначение задач",
+    evtAssignmentDesc: "Уведомлять, когда задачу назначают на вас",
+    evtCommentsTitle: "Новые комментарии",
+    evtCommentsDesc: "Уведомлять о новых комментариях в отслеживаемых/назначенных задачах",
+    evtStatusTitle: "Изменение статусов",
+    evtStatusDesc: "Уведомлять о переходах статусов задач",
+    evtReviewTitle: "Запросы ревью",
+    evtReviewDesc: "Уведомлять об изменениях флагов ревью или аппруверов",
+    evtAutoClearTitle: "Авто-очистка завершенных задач",
+    evtAutoClearDesc: "Автоматически помечать прочитанными уведомления, когда задача переводится в Done / Resolved / Closed",
+
+    secSoundNotifs: "Уведомления и настройки звука",
+    desktopNotifsTitle: "Всплывающие уведомления",
+    desktopNotifsDesc: "Отображать системные алерты в Chrome при новых событиях",
+    audioSoundTitle: "Звуковой сигнал",
+    audioSoundDesc: "Проигрывать аудио при поступлении алертов",
+    soundStyleLabel: "Стиль звука уведомления",
+    soundAnime: "🌸 Голос Anime Girl (\"Notice me Senpai! / Kyaa~\")",
+    soundChime: "🔔 Классический гармоничный колокольчик",
+    soundCustom: "🎵 Пользовательский аудиофайл (assets/notice.mp3 или Загрузить)",
+    playSoundBtn: "▶ Тест звука",
+    customSoundLabel: "Загрузить свой аудиофайл (.mp3, .wav, .ogg)",
+    removeFile: "🗑 Удалить",
+    customSoundHelpDefault: "Если файл не загружен вручную, подтягивается assets/notice.mp3 или assets/anime_girl.mp3.",
+    customSoundLoaded: "Загружен файл: {name}",
+
+    secLanguage: "Язык / Мова / Language",
+    languageLabel: "Язык интерфейса",
+    langEn: "🇬🇧 English",
+    langRu: "🇷🇺 Русский",
+    langUa: "🇺🇦 Українська",
+
+    secAppearance: "Внешний вид",
+    darkThemeTitle: "Темная тема",
+    darkThemeDesc: "Включить темный режим интерфейса для Popup и Options",
+
+    saveSettingsBtn: "Сохранить настройки",
+    savingBtn: "Сохранение...",
+    saveSuccess: "✓ Настройки успешно сохранены!",
+    saveFailed: "Не удалось сохранить настройки."
+  },
+  ua: {
+    appTitle: "Boosta Jira Notifier",
+    appSubtitle: "Конфігурація та налаштування розширення",
+    statusConnected: "Підключено",
+    statusDisconnected: "Не налаштовано",
+    statusChecking: "Перевірка...",
+    lastSync: "Синхронізація",
+    syncBtn: "Оновити",
+    openJira: "Jira",
+    settings: "Налаштування",
+    clearHistory: "Очистити історію",
+    allCaughtUp: "Усі сповіщення прочитані!",
+    noNotifs: "Нових сповіщень Jira не знайдено.",
+
+    secJiraConnection: "Підключення до Jira",
+    jiraDeploymentType: "Тип розгортання Jira",
+    jiraServerDc: "Jira Server / Data Center (REST API v2)",
+    jiraCloud: "Jira Cloud (REST API v3)",
+    serverUrlLabel: "Базовий URL сервера Jira",
+    serverUrlHelpServer: "Введіть URL сервера Boosta Jira (наприклад, https://jira.boosta.co).",
+    serverUrlHelpCloud: "Введіть URL Jira Cloud (наприклад, https://your-company.atlassian.net).",
+    authStrategy: "Стратегія авторизації",
+    patLabel: "Персональний токен (PAT / Bearer)",
+    basicLabel: "Логін та Пароль / Токен (Basic)",
+    usernameLabel: "Ім'я користувача Jira",
+    tokenLabelPat: "Персональний токен доступу (PAT)",
+    tokenLabelBasic: "Пароль / Токен",
+    cloudEmailLabel: "Email акаунта Atlassian",
+    cloudApiTokenLabel: "API Токен Jira Cloud",
+    testConnection: "Перевірити з'єднання",
+    testing: "Перевірка...",
+
+    secSyncFrequency: "Частота фонової синхронізації",
+    checkIntervalLabel: "Інтервал перевірки (у секундах)",
+    interval15: "15 секунд (Висока частота)",
+    interval30: "30 секунд (Рекомендовано)",
+    interval60: "60 секунд (1 хвилина)",
+    interval120: "120 секунд (2 хвилини)",
+    intervalHelp: "Менший інтервал забезпечує швидшу доставку сповіщень.",
+
+    secEventTypes: "Відстежувані типи подій",
+    evtMentionsTitle: "@Згадування",
+    evtMentionsDesc: "Сповіщати, коли вас згадують у коментарях або описі задач",
+    evtAssignmentTitle: "Призначення задач",
+    evtAssignmentDesc: "Сповіщати, коли задачу призначають на вас",
+    evtCommentsTitle: "Нові коментарі",
+    evtCommentsDesc: "Сповіщати про нові коментарі у відстежуваних/призначених задачах",
+    evtStatusTitle: "Зміна статусів",
+    evtStatusDesc: "Сповіщати про переходи статусів задач",
+    evtReviewTitle: "Запити рев'ю",
+    evtReviewDesc: "Сповіщати про зміни прапорців рев'ю або апруверів",
+    evtAutoClearTitle: "Авто-очищення завершених задач",
+    evtAutoClearDesc: "Автоматично позначати прочитаними сповіщення, коли задача переводиться в Done / Resolved / Closed",
+
+    secSoundNotifs: "Сповіщення та налаштування звуку",
+    desktopNotifsTitle: "Спливаючі сповіщення",
+    desktopNotifsDesc: "Відображати системні сповіщення в Chrome при нових подіях",
+    audioSoundTitle: "Звуковий сигнал",
+    audioSoundDesc: "Програвати аудіо при отриманні сповіщень",
+    soundStyleLabel: "Стиль звуку сповіщення",
+    soundAnime: "🌸 Голос Anime Girl (\"Notice me Senpai! / Kyaa~\")",
+    soundChime: "🔔 Класичний гармонійний дзвоник",
+    soundCustom: "🎵 Користувальницький аудіофайл (assets/notice.mp3 або Завантажити)",
+    playSoundBtn: "▶ Тест звуку",
+    customSoundLabel: "Завантажити свій аудіофайл (.mp3, .wav, .ogg)",
+    removeFile: "🗑 Видалити",
+    customSoundHelpDefault: "Якщо файл не завантажено вручну, підтягується assets/notice.mp3 або assets/anime_girl.mp3.",
+    customSoundLoaded: "Завантажено файл: {name}",
+
+    secLanguage: "Мова / Язык / Language",
+    languageLabel: "Мова інтерфейсу",
+    langEn: "🇬🇧 English",
+    langRu: "🇷🇺 Русский",
+    langUa: "🇺🇦 Українська",
+
+    secAppearance: "Зовнішній вигляд",
+    darkThemeTitle: "Темна тема",
+    darkThemeDesc: "Увімкнути темний режим інтерфейсу для Popup та Options",
+
+    saveSettingsBtn: "Зберегти налаштування",
+    savingBtn: "Збереження...",
+    saveSuccess: "✓ Налаштування успішно збережені!",
+    saveFailed: "Не вдалося зберегти налаштування."
+  }
+};
+
+/**
+ * Helper to retrieve translated text string by key and active language.
+ * 
+ * @param {string} key Dictionary key name.
+ * @param {string} lang Language code ('en', 'ru', 'ua').
+ * @param {Object} params Interpolation key-value pairs.
+ * @returns {string} Translated string.
+ */
+export function t(key, lang = 'ru', params = {}) {
+  const activeLang = TRANSLATIONS[lang] ? lang : 'en';
+  let str = TRANSLATIONS[activeLang][key] || TRANSLATIONS['en'][key] || key;
+
+  Object.entries(params).forEach(([paramKey, paramVal]) => {
+    str = str.replace(new RegExp(`\\{${paramKey}\\}`, 'g'), paramVal);
+  });
+
+  return str;
+}
