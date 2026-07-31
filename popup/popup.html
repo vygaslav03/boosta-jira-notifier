@@ -72,7 +72,24 @@
       <button class="btn-text dnd-off-btn" id="btnDisableDnd">Disable</button>
     </div>
 
-    <!-- Main Notification List Container -->
+    <!-- Navigation Tabs -->
+    <nav class="tab-bar" id="tabBar">
+      <button class="tab-btn active" data-tab="notifications">
+        <span>🔔 Уведомления</span>
+        <span class="badge" id="unreadBadge">0</span>
+      </button>
+      <button class="tab-btn" data-tab="assigned">
+        <span>📋 Мои задачи</span>
+      </button>
+      <button class="tab-btn" data-tab="watched">
+        <span>👁 Наблюдаемые</span>
+      </button>
+      <button class="tab-btn" data-tab="review">
+        <span>🚨 На ревью</span>
+      </button>
+    </nav>
+
+    <!-- Main Notification & Issues List Container -->
     <main class="notifications-section">
       <div class="section-header">
         <h2 class="section-title">Recent Notifications</h2>
