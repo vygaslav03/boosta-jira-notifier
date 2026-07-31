@@ -170,8 +170,20 @@
       e.preventDefault();
       e.stopPropagation();
       try {
-        const latestMarkdown = `[${key}](${window.location.href})`;
-        await navigator.clipboard.writeText(latestMarkdown);
+        const url = window.location.href;
+        const htmlBlob = new Blob([`<a href="${url}">${key}</a>`], { type: 'text/html' });
+        const textBlob = new Blob([`<${url}|${key}>`], { type: 'text/plain' });
+
+        if (window.ClipboardItem && navigator.clipboard.write) {
+          const item = new ClipboardItem({
+            'text/html': htmlBlob,
+            'text/plain': textBlob
+          });
+          await navigator.clipboard.write([item]);
+        } else {
+          await navigator.clipboard.writeText(`<${url}|${key}>`);
+        }
+
         const textSpan = linkBtn.querySelector('.b-text');
         const origText = textSpan.textContent;
         linkBtn.classList.add('copied');
@@ -182,6 +194,9 @@
         }, 1500);
       } catch (err) {
         console.error('[Boosta Notifier] Copy link error:', err);
+        try {
+          await navigator.clipboard.writeText(`<${window.location.href}|${key}>`);
+        } catch (_) {}
       }
     });
 
