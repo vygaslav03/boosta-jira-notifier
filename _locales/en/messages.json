@@ -1,0 +1,10 @@
+{
+  "extName": {
+    "message": "Boosta Jira Notifier",
+    "description": "Extension name"
+  },
+  "extDescription": {
+    "message": "Real-time background notifications for Jira mentions, assignments, comments, status changes, and code reviews.",
+    "description": "Extension description"
+  }
+}
